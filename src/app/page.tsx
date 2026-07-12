@@ -1,65 +1,121 @@
 import Image from "next/image";
+import Link from "next/link";
+import { Hero } from "@/components/Hero";
+import { NewsletterForm } from "@/components/NewsletterForm";
+import { ProductCutout } from "@/components/ProductCutout";
+import { getFeaturedProduct, getFeaturedProducts } from "@/data/products";
+import { formatPrice } from "@/lib/format";
 
-export default function Home() {
+export default function HomePage() {
+  const product = getFeaturedProduct();
+  const featured = getFeaturedProducts(3);
+  const lifestyle = product.lifestyleImages[0];
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <>
+      <Hero product={product} />
+
+      {featured.map((item, index) => (
+        <section key={item.id} className="pad-x py-8 md:py-12">
+          <div
+            className={`relative bg-transparent ${
+              index === 1
+                ? "aspect-[5/4] md:ml-auto md:max-w-[60%]"
+                : "aspect-[16/9] md:aspect-[2.2/1]"
+            }`}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+            <ProductCutout
+              src={item.images[0].src}
+              alt={item.images[0].alt}
+              interactive
+              sizes="100vw"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          </div>
+          <div
+            className={`mt-8 max-w-3xl ${
+              index === 1 ? "md:ml-auto md:max-w-md md:text-right" : ""
+            }`}
           >
-            Documentation
-          </a>
+            <p className="mb-2 text-sm text-mute">Women&apos;s Golf Shoe</p>
+            <h2 className="font-serif text-3xl tracking-tight md:text-5xl">
+              {item.name}
+            </h2>
+            <ul
+              className={`mt-6 space-y-2 ${
+                index === 1 ? "md:ml-auto md:max-w-xs" : "max-w-sm"
+              }`}
+            >
+              {item.colors.map((color) => (
+                <li
+                  key={color.id}
+                  className="flex items-baseline justify-between gap-6 text-sm text-mute"
+                >
+                  <span>{color.name}</span>
+                  <span>
+                    {item.inStock ? formatPrice(item.price) : "Sold out"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+            <Link
+              href={`/product/${item.slug}`}
+              className="btn btn-primary mt-6 inline-flex"
+            >
+              View
+            </Link>
+          </div>
+
+          {index === 0 ? (
+            <div className="pad-y px-0">
+              <h2 className="chapter max-w-[14ch]">
+                After the round
+                <br />
+                <span className="italic">somewhere better</span>
+              </h2>
+            </div>
+          ) : null}
+        </section>
+      ))}
+
+      <section>
+        <div className="img-reveal relative h-[70svh] min-h-[24rem] bg-ivory md:h-[85svh]">
+          <Image
+            src={lifestyle.src}
+            alt={lifestyle.alt}
+            fill
+            className="object-cover"
+            sizes="100vw"
+          />
         </div>
-      </main>
-    </div>
+        <div className="pad-x py-10 md:py-14">
+          <p className="font-serif text-2xl tracking-tight md:text-4xl">
+            Golf shoes for women who dress like themselves.
+            <br />
+            Soft enough for town. Strange enough for Cypress.
+          </p>
+          <div className="mt-6 flex flex-wrap gap-6">
+            <Link href="/shop" className="btn btn-primary">
+              Shop
+            </Link>
+            <Link href="/our-story" className="btn btn-primary">
+              Brand
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section className="pad-x py-6 md:py-10">
+        <div className="mt-4 flex flex-wrap items-baseline justify-between gap-4 border-t border-line pt-10">
+          <p className="font-serif text-2xl tracking-tight md:text-3xl">
+            Journal
+          </p>
+          <Link href="/journal" className="btn btn-primary">
+            Explore
+          </Link>
+        </div>
+      </section>
+
+      <NewsletterForm />
+    </>
   );
 }
